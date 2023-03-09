@@ -6,3 +6,18 @@ edition = "2021"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
+
+# Our lib - 'idioms' with all packages in the 'lib' directory
+[lib]
+name = "idioms"
+path = "src/idioms_lib.rs"
+
+# Bins for running example for each added package
+[[bin]]
+name = "counters"
+
+[[bin]]
+name = "into"
+
+[[bin]]
+name = "file_parse"
