@@ -5,6 +5,7 @@ use std::{fs::File, io::Read, num::ParseIntError};
 pub enum NumberFromFileError {
     ParseError(ParseIntError),
     IoError(std::io::Error),
+    EmptyFile,
 }
 
 impl std::fmt::Display for NumberFromFileError {
@@ -15,6 +16,9 @@ impl std::fmt::Display for NumberFromFileError {
             }
             NumberFromFileError::ParseError(parse) => {
                 write!(f, "{parse}")
+            }
+            NumberFromFileError::EmptyFile => {
+                write!(f, "No number in file!")
             }
         }
     }
@@ -43,10 +47,29 @@ pub fn read_file(filename: &str) -> Result<String, NumberFromFileError> {
     Ok(buffer)
 }
 
-pub fn read_number_from_file(filename: &str) -> Result<u64, NumberFromFileError> {
-    let buffer = read_file(filename)?;
+fn parse_number(data: String) -> Result<u64, NumberFromFileError> {
+    for line in data.lines() {
+        let trimmed = line.trim();
 
-    let parsed: u64 = buffer.trim().parse()?;
+        if trimmed.len() == 0 || trimmed.starts_with("#") || trimmed.starts_with("//") {
+            continue;
+        }
+
+        // Let's remove '_' so we can parse things like 1_000
+        let trimmed = trimmed.chars().filter(|c| *c != '_').collect::<String>();
+
+        let parsed = trimmed.parse()?;
+
+        return Ok(parsed);
+    }
+
+    Err(NumberFromFileError::EmptyFile)
+}
+
+pub fn read_number_from_file(filename: &str) -> Result<u64, NumberFromFileError> {
+    let data = read_file(filename)?;
+
+    let parsed = parse_number(data)?;
 
     Ok(parsed)
 }

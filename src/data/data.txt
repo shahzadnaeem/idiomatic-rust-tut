@@ -1,1 +1,8 @@
-1007
+
+# A comment to be ignored
+// This is also a comment 1234
+
+1_007
+
+// Sorry, we won't see you big num
+1_000_000

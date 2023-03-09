@@ -7,11 +7,14 @@ pub fn main() -> Result<(), Box<dyn Error>> {
 
     let data = read_file(DATA_PATH)?;
 
-    println!("\nFile: {} contents\n{}\n", DATA_PATH, data);
+    println!("\nFile: {} contents:{}\n", DATA_PATH, data);
 
-    let num = read_number_from_file(DATA_PATH)?;
+    let num = read_number_from_file(DATA_PATH);
 
-    println!("Number read: {}", num);
+    match num {
+        Ok(n) => println!("Number read: {}", n),
+        Err(e) => println!("Error: {}", e),
+    }
 
     Ok(())
 }
