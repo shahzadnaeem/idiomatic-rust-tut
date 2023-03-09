@@ -47,7 +47,7 @@ pub fn read_file(filename: &str) -> Result<String, NumberFromFileError> {
     Ok(buffer)
 }
 
-fn parse_number(data: String) -> Result<u64, NumberFromFileError> {
+pub fn parse_number(data: String) -> Result<u64, NumberFromFileError> {
     for line in data.lines() {
         let trimmed = line.trim();
 
