@@ -34,12 +34,12 @@ I kind of like the structure I've got here. Seems a little more 'obvious' after 
 - Cargo.toml
 
     ```toml
-    # Our lib - 'idioms' with all packages in the 'lib' directory
+    # Our lib - 'idioms' with all modules in the 'lib' directory
     [lib]
     name = "idioms"
     path = "src/idioms_lib.rs"
 
-    # Bins for running example for each added package
+    # Bins for running example for each added module
     [[bin]]
     name = "counters"
     ```
