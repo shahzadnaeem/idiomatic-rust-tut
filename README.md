@@ -26,6 +26,7 @@ I kind of like the structure I've got here. Seems a little more 'obvious' after 
     │   │   ├── file_parse.rs
     │   │   └── into.rs
     │   └── tests
+    │       └── file_parse_tests.rs
     └── target...
 
 ### Details
