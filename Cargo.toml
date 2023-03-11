@@ -11,13 +11,17 @@ edition = "2021"
 [lib]
 name = "idioms"
 path = "src/idioms_lib.rs"
+doctest = false
 
 # Bins for running example for each added package
 [[bin]]
 name = "counters"
+test = false
 
 [[bin]]
 name = "into"
+test = false
 
 [[bin]]
 name = "file_parse"
+test = false

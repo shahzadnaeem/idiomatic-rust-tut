@@ -1,12 +1,6 @@
-#[derive(Debug)]
+#[derive(Debug, Default)]
 pub struct Counter {
     c: u32,
-}
-
-impl Default for Counter {
-    fn default() -> Self {
-        Counter { c: 0 }
-    }
 }
 
 impl Counter {

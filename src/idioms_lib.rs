@@ -7,8 +7,8 @@ pub mod into;
 #[path = "lib/file_parse.rs"]
 pub mod file_parse;
 
-// NOTE: This must be a sub-module of file_parse to enable private function testing!
-// NOTE: This is now optional as the filename is detected as a tests file by Rust
-#[cfg(test)]
-#[path = "lib/file_parse/file_parse_tests.rs"]
-mod file_parse_tests;
+// NOTE: It is possible to defined tests for modules here, but it affects the module nesting
+//       For example, defining 'file_parse_tests' here will no longer allow a simple 'use super::*;'
+//       to access all 'file_parse' members.
+//
+//       See #[cfg(test)] at the end of 'lib/file_parse.rs'

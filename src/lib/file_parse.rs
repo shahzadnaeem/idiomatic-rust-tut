@@ -1,6 +1,6 @@
 use std::{fs::File, io::Read, num::ParseIntError};
 
-// enum to handle both possible errors
+// enum to handle all possible errors - both sourse errors and one of our own
 #[derive(Debug)]
 pub enum NumberFromFileError {
     ParseError(ParseIntError),
@@ -8,7 +8,7 @@ pub enum NumberFromFileError {
     EmptyFile,
 }
 
-pub(super) fn priv_fn<'a>(a: u32, b: u32) -> Result<u32, &'a str> {
+fn priv_fn<'a>(a: u32, b: u32) -> Result<u32, &'a str> {
     if u32::MAX - b > a {
         Ok(a + b)
     } else {
@@ -16,8 +16,8 @@ pub(super) fn priv_fn<'a>(a: u32, b: u32) -> Result<u32, &'a str> {
     }
 }
 
-pub fn blah<'a>() -> Result<u32, &'a str> {
-    Ok(priv_fn(1, 2)?)
+pub fn _dummy<'a>() -> Result<u32, &'a str> {
+    priv_fn(1, 2)
 }
 
 impl std::fmt::Display for NumberFromFileError {
@@ -63,7 +63,7 @@ pub fn parse_number(data: String) -> Result<u64, NumberFromFileError> {
     for line in data.lines() {
         let trimmed = line.trim();
 
-        if trimmed.len() == 0 || trimmed.starts_with("#") || trimmed.starts_with("//") {
+        if trimmed.is_empty() || trimmed.starts_with('#') || trimmed.starts_with("//") {
             continue;
         }
 
@@ -85,3 +85,9 @@ pub fn read_number_from_file(filename: &str) -> Result<u64, NumberFromFileError>
 
     Ok(parsed)
 }
+
+// Tests ----------------------------------------------------------------------
+
+#[cfg(test)]
+#[path = "file_parse/file_parse_tests.rs"]
+mod file_parse_tests;
