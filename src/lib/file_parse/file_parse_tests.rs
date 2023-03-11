@@ -2,10 +2,25 @@ use std::io::ErrorKind;
 
 use crate::file_parse::{self, NumberFromFileError};
 
+use super::file_parse::*;
+
+// Private tests
+
 #[test]
-pub fn priv_fn_accessible() {
-    let res = crate::file_parse::priv_fn(1, 2);
+pub fn priv_fn_ok() {
+    let res = priv_fn(1, 2);
+
+    assert_eq!(Ok(3), res);
 }
+
+#[test]
+pub fn priv_fn_err() {
+    let res = priv_fn(1, u32::MAX);
+
+    assert!(res.is_err());
+}
+
+// Public tests
 
 #[test]
 pub fn nothing_if_empty() {

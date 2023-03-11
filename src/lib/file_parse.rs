@@ -9,11 +9,15 @@ pub enum NumberFromFileError {
 }
 
 pub(super) fn priv_fn<'a>(a: u32, b: u32) -> Result<u32, &'a str> {
-    if u32::MAX - b <= a {
+    if u32::MAX - b > a {
         Ok(a + b)
     } else {
         Err("Nah!")
     }
+}
+
+pub fn blah<'a>() -> Result<u32, &'a str> {
+    Ok(priv_fn(1, 2)?)
 }
 
 impl std::fmt::Display for NumberFromFileError {
