@@ -9,6 +9,8 @@ Trying out a few things in Rust based on some other tutorials.
 ## Directory Structure
 
 I kind of like the structure I've got here. Seems a little more 'obvious' after using other languages. You may not like it.
+NOTE: Test files have to be sub-modules to allow testing of module private functions using Rust's access rules.
+      Previously, a separate tests directory was used but this prevents private module access.
 
     ├── Cargo.lock
     ├── Cargo.toml
@@ -21,13 +23,13 @@ I kind of like the structure I've got here. Seems a little more 'obvious' after 
     │   ├── data
     │   │   └── data.txt
     │   ├── idioms_lib.rs
-    │   ├── lib
-    │   │   ├── counters.rs
-    │   │   ├── file_parse.rs
-    │   │   └── into.rs
-    │   └── tests
-    │       └── file_parse_tests.rs
-    └── target...
+    │   └── lib
+    │       ├── counters.rs
+    │       ├── file_parse
+    │       │   └── file_parse_tests.rs
+    │       ├── file_parse.rs
+    │       └── into.rs
+    └── target ...
 
 ### Details
 
@@ -55,4 +57,10 @@ I kind of like the structure I've got here. Seems a little more 'obvious' after 
 
     #[path = "lib/file_parse.rs"]
     pub mod file_parse;
+
+    // NOTE: This must be a sub-module of file_parse to enable private function testing!
+    #[cfg(test)]
+    #[path = "lib/file_parse/file_parse_tests.rs"]
+    mod file_parse_tests;
+
     ```

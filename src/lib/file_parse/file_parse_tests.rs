@@ -3,6 +3,11 @@ use std::io::ErrorKind;
 use crate::file_parse::{self, NumberFromFileError};
 
 #[test]
+pub fn priv_fn_accessible() {
+    let res = crate::file_parse::priv_fn(1, 2);
+}
+
+#[test]
 pub fn nothing_if_empty() {
     let data = "".to_string();
 

@@ -4,9 +4,10 @@ pub mod counters;
 #[path = "lib/into.rs"]
 pub mod into;
 
-#[cfg(test)]
-#[path = "tests/file_parse_tests.rs"]
-mod file_parse_tests;
-
 #[path = "lib/file_parse.rs"]
 pub mod file_parse;
+
+// NOTE: This must be a sub-module of file_parse to enable private function testing!
+#[cfg(test)]
+#[path = "lib/file_parse/file_parse_tests.rs"]
+mod file_parse_tests;
