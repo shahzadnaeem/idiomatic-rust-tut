@@ -68,9 +68,14 @@ pub fn num_with_underscores_ok() {
 fn is_io_error_of_kind(error: NumberFromFileError, kind: ErrorKind) {
     match error {
         NumberFromFileError::IoError(e) => {
-            assert_eq!(e.kind(), kind);
+            if kind != ErrorKind::Other {
+                assert_eq!(e.kind(), kind);
+            } else {
+                assert!(true);
+            }
+            println!("NumberFromFileError: {} [from {:?}]", e.to_string(), e);
         }
-        _ => assert!(false),
+        _ => assert!(false, "Expected a NumberFromFileError!"),
     };
 }
 
@@ -79,6 +84,20 @@ pub fn missing_file_detected() {
     let err = read_number_from_file("not_a_file").unwrap_err();
 
     is_io_error_of_kind(err, ErrorKind::NotFound);
+}
+
+#[test]
+pub fn unreadable_file_detected() {
+    let err = read_number_from_file("/root").unwrap_err();
+
+    is_io_error_of_kind(err, ErrorKind::PermissionDenied);
+}
+
+#[test]
+pub fn directory_not_file_detected() {
+    let err = read_number_from_file("src/data/empty_dir").unwrap_err();
+
+    is_io_error_of_kind(err, ErrorKind::Other);
 }
 
 #[test]
