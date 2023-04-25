@@ -12,3 +12,6 @@ pub mod file_parse;
 //       to access all 'file_parse' members.
 //
 //       See #[cfg(test)] at the end of 'lib/file_parse.rs'
+
+#[path = "lib/structures.rs"]
+pub mod structures;
