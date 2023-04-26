@@ -177,19 +177,22 @@ mod structures_tests {
                 assert!(page.contains(key));
             }
 
-            println!("Book: {} has {} pages", key, book.len());
+            println!("Book: '{}' has {} pages", key, book.len());
         }
     }
 
     #[test]
     fn builder_builds() {
-        let data = make_books(NUM_BOOKS, NUM_PAGES);
+        let num_books = NUM_BOOKS;
+        let num_pages = NUM_PAGES;
+
+        let data = make_books(num_books, num_pages);
 
         let builder = BookBuilder::new(data);
 
         let books = builder.build();
 
-        assert_eq!(NUM_BOOKS, books.len() as u32);
+        assert_eq!(num_books, books.len() as u32);
 
         for book in books {
             let book_num = book.title.split_ascii_whitespace().collect::<Vec<_>>()[1]
@@ -197,9 +200,29 @@ mod structures_tests {
                 .unwrap();
 
             assert!(book.title.contains("Book "));
-            assert_eq!(book_num + NUM_PAGES - 1, book.num_pages());
+            assert_eq!(book_num + num_pages - 1, book.num_pages());
 
-            println!("Book: {} has {} pages", book.title, book.num_pages());
+            println!("Book: '{}' has {} pages", book.title, book.num_pages());
         }
+    }
+
+    #[test]
+    fn builder_builds_with_no_books() {
+        let data: BookPages = Vec::new();
+
+        let builder = BookBuilder::new(data);
+
+        let books = builder.build();
+
+        assert_eq!(0, books.len() as u32);
+    }
+
+    #[test]
+    fn builder_builds_with_default() {
+        let builder = BookBuilder::default();
+
+        let books = builder.build();
+
+        assert_eq!(0, books.len() as u32);
     }
 }
