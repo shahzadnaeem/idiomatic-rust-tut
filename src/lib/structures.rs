@@ -1,8 +1,10 @@
 #[derive(Debug, Clone)]
 pub struct Book {
     pub title: String,
-    pub pages: Vec<Page>,
+    pub pages: Pages,
 }
+
+type Books = Vec<Book>;
 
 #[derive(Debug, Clone)]
 pub struct Page {
@@ -11,11 +13,13 @@ pub struct Page {
     pub text: String,
 }
 
+type Pages = Vec<Page>;
+
 type BookPage = (String, String);
 type BookPages = Vec<BookPage>;
 
 impl Book {
-    fn new(title: String, pages: Vec<Page>) -> Self {
+    fn new(title: String, pages: Pages) -> Self {
         Book { title, pages }
     }
 
@@ -24,12 +28,49 @@ impl Book {
     }
 }
 
-use itertools::Itertools;
+#[derive(Default)]
+pub struct BookBuilder {
+    entries: BookPages,
+}
+
+impl BookBuilder {
+    fn new(entries: BookPages) -> BookBuilder {
+        BookBuilder { entries }
+    }
+
+    fn build(self) -> Books {
+        let mut map: HashMap<String, Pages> = HashMap::new();
+
+        for (book, page) in self.entries {
+            if !map.contains_key(&book) {
+                map.insert(book.clone(), Vec::new());
+            }
+
+            if let Some(book_pages) = map.get_mut(&book) {
+                let page_number = (book_pages.len() + 1) as u64;
+
+                book_pages.push(Page::new(page_number, page));
+            }
+        }
+
+        let mut books: Books = Vec::new();
+
+        let book_titles = map.keys().cloned().collect::<Vec<_>>();
+
+        for title in book_titles {
+            let pages = map.remove(&title).unwrap();
+            books.push(Book::new(title, pages));
+        }
+
+        books
+    }
+}
+
 use std::collections::HashMap;
 
 impl From<BookPages> for Book {
     fn from(book_pages: BookPages) -> Book {
-        let mut map: HashMap<String, Vec<Page>> = HashMap::new();
+        let mut map: HashMap<String, Pages> = HashMap::new();
 
         for (book, page) in book_pages {
             if !map.contains_key(&book) {
@@ -44,7 +85,7 @@ impl From<BookPages> for Book {
         }
 
         if map.len() == 1 {
-            let book = map.keys().nth(0).unwrap();
+            let book = map.keys().next().unwrap();
             let pages = map.get(book).unwrap().clone();
 
             Book::new(book.clone(), pages)
@@ -70,7 +111,7 @@ impl Page {
 mod structures_tests {
     use super::*;
 
-    use rand::{seq::SliceRandom, thread_rng};
+    use itertools::Itertools;
 
     #[test]
     fn empty_book() {
@@ -96,35 +137,34 @@ mod structures_tests {
         assert_eq!("", book.pages[0].text);
     }
 
-    #[test]
-    fn book_page_grouping() {
-        const NUM_BOOKS: u32 = 3;
-        const NUM_PAGES: u32 = 5;
+    const NUM_BOOKS: u32 = 3;
+    const NUM_PAGES: u32 = 5;
 
+    fn make_books(nbooks: u32, npages: u32) -> BookPages {
         let mut data: BookPages = Vec::new();
 
-        for bk in 0..NUM_BOOKS {
-            for pg in 0..NUM_PAGES {
-                let book = format!("Book {}", bk + 1);
-                let page = format!(
-                    "Page {} of Book {}. {}",
-                    pg + 1,
-                    bk + 1,
-                    "X".repeat(((bk + 1) * (pg + 1) * 10) as usize)
-                );
+        for pg in 0..npages + nbooks {
+            for bk in 0..nbooks {
+                if (bk + npages) > pg {
+                    let book = format!("Book {}", bk + 1);
+                    let page = format!(
+                        "Page {} of Book {}. {}",
+                        pg + 1,
+                        bk + 1,
+                        "X".repeat(((bk + 1) * (pg + 1) * 10) as usize)
+                    );
 
-                data.push((book, page));
+                    data.push((book, page));
+                }
             }
         }
 
-        let mut rng = thread_rng();
-        let rand_data = &mut data;
+        data
+    }
 
-        rand_data.shuffle(&mut rng);
-
-        for (book, page) in data.clone() {
-            // println!("Book: {}, page: {}", book, page);
-        }
+    #[test]
+    fn book_page_grouping() {
+        let data = make_books(NUM_BOOKS, NUM_PAGES);
 
         let grouped = data.into_iter().into_group_map();
 
@@ -137,7 +177,29 @@ mod structures_tests {
                 assert!(page.contains(key));
             }
 
-            println!("Book: {}, {:?}", key, book);
+            println!("Book: {} has {} pages", key, book.len());
+        }
+    }
+
+    #[test]
+    fn builder_builds() {
+        let data = make_books(NUM_BOOKS, NUM_PAGES);
+
+        let builder = BookBuilder::new(data);
+
+        let books = builder.build();
+
+        assert_eq!(NUM_BOOKS, books.len() as u32);
+
+        for book in books {
+            let book_num = book.title.split_ascii_whitespace().collect::<Vec<_>>()[1]
+                .parse::<u32>()
+                .unwrap();
+
+            assert!(book.title.contains("Book "));
+            assert_eq!(book_num + NUM_PAGES - 1, book.num_pages());
+
+            println!("Book: {} has {} pages", book.title, book.num_pages());
         }
     }
 }
