@@ -13,17 +13,17 @@ pub struct Page {
     pub text: String,
 }
 
-type Pages = Vec<Page>;
+pub type Pages = Vec<Page>;
 
-type BookPage = (String, String);
-type BookPages = Vec<BookPage>;
+pub type BookPage = (String, String);
+pub type BookPages = Vec<BookPage>;
 
 impl Book {
-    fn new(title: String, pages: Pages) -> Self {
+    pub fn new(title: String, pages: Pages) -> Self {
         Book { title, pages }
     }
 
-    fn num_pages(&self) -> u32 {
+    pub fn num_pages(&self) -> u32 {
         self.pages.len() as u32
     }
 }
@@ -34,11 +34,11 @@ pub struct BookBuilder {
 }
 
 impl BookBuilder {
-    fn new(entries: BookPages) -> BookBuilder {
+    pub fn new(entries: BookPages) -> BookBuilder {
         BookBuilder { entries }
     }
 
-    fn build(self) -> Books {
+    pub fn build(self) -> Books {
         let mut map: HashMap<String, Pages> = HashMap::new();
 
         for (book, page) in self.entries {
@@ -96,7 +96,7 @@ impl From<BookPages> for Book {
 }
 
 impl Page {
-    fn new(number: u64, text: String) -> Self {
+    pub fn new(number: u64, text: String) -> Self {
         let words = text.split_ascii_whitespace().count() as u32;
 
         Page {
@@ -107,11 +107,36 @@ impl Page {
     }
 }
 
+pub fn make_sample_books(nbooks: u32, npages: u32) -> BookPages {
+    let mut data: BookPages = Vec::new();
+
+    for pg in 0..npages + nbooks {
+        for bk in 0..nbooks {
+            if (bk + npages) > pg {
+                let book = format!("Book {}", bk + 1);
+                let page = format!(
+                    "Page {} of Book {}. {}",
+                    pg + 1,
+                    bk + 1,
+                    "X".repeat(((bk + 1) * (pg + 1) * 10) as usize)
+                );
+
+                data.push((book, page));
+            }
+        }
+    }
+
+    data
+}
+
 #[cfg(test)]
 mod structures_tests {
     use super::*;
 
     use itertools::Itertools;
+
+    const NUM_BOOKS: u32 = 3;
+    const NUM_PAGES: u32 = 5;
 
     #[test]
     fn empty_book() {
@@ -137,34 +162,9 @@ mod structures_tests {
         assert_eq!("", book.pages[0].text);
     }
 
-    const NUM_BOOKS: u32 = 3;
-    const NUM_PAGES: u32 = 5;
-
-    fn make_books(nbooks: u32, npages: u32) -> BookPages {
-        let mut data: BookPages = Vec::new();
-
-        for pg in 0..npages + nbooks {
-            for bk in 0..nbooks {
-                if (bk + npages) > pg {
-                    let book = format!("Book {}", bk + 1);
-                    let page = format!(
-                        "Page {} of Book {}. {}",
-                        pg + 1,
-                        bk + 1,
-                        "X".repeat(((bk + 1) * (pg + 1) * 10) as usize)
-                    );
-
-                    data.push((book, page));
-                }
-            }
-        }
-
-        data
-    }
-
     #[test]
     fn book_page_grouping() {
-        let data = make_books(NUM_BOOKS, NUM_PAGES);
+        let data = make_sample_books(NUM_BOOKS, NUM_PAGES);
 
         let grouped = data.into_iter().into_group_map();
 
@@ -186,7 +186,7 @@ mod structures_tests {
         let num_books = NUM_BOOKS;
         let num_pages = NUM_PAGES;
 
-        let data = make_books(num_books, num_pages);
+        let data = make_sample_books(num_books, num_pages);
 
         let builder = BookBuilder::new(data);
 
@@ -194,7 +194,7 @@ mod structures_tests {
 
         assert_eq!(num_books, books.len() as u32);
 
-        for book in books {
+        for book in &books {
             let book_num = book.title.split_ascii_whitespace().collect::<Vec<_>>()[1]
                 .parse::<u32>()
                 .unwrap();

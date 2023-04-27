@@ -35,3 +35,7 @@ test = false
 [[bin]]
 name = "time"
 test = false
+
+[[bin]]
+name = "books"
+test = false
