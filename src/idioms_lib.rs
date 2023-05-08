@@ -15,3 +15,6 @@ pub mod file_parse;
 
 #[path = "lib/structures.rs"]
 pub mod structures;
+
+#[path = "lib/base/lib.rs"]
+pub mod base;
