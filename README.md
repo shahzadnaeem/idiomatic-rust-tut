@@ -8,6 +8,12 @@ Trying out a few things in Rust based on some other tutorials.
 
 ## Directory Structure
 
+UPDATE: Not idiomatic Rust! 😄
+
+Not a good way to proceed. Have a better understanding of modules now, so will not use this.
+
+### What I Tried
+
 I kind of like the structure I've got here. Seems a little more 'obvious' after using other languages. You may not like it.
 NOTE: Test files have to be sub-modules to allow testing of module private functions using Rust's access rules.
       Previously, a separate tests directory was used but this prevents private module access.
